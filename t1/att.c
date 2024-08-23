@@ -1,19 +1,25 @@
-#include <stdio.h>
-#include <stdlib.h>
 #include "att.h"
 
-void encontraAtt(int idArquivo, Atributo** atts, int* n){ //recebe o id do arquivo, um ponteiro para um vetor de atributos
-    FILE* file = fopen("t1/att.dat", "rb"); //leitura binária
-    if(file == NULL){
-        return;
+int leAtributo(FILE *file, Atributo *entry) {
+    return fread(entry, sizeof(Atributo), 1, file) == 1;
+}
+
+int buscaAtributo(int idArquivo, Atributo **atts, int *n) {
+    FILE *file = fopen("att.dic", "rb");
+    if (file == NULL) {
+        perror("Error opening att.dic");
+        return 0;
     }
-    Atributo att;
-    while(fread(&att, sizeof(Atributo), 1, file)){ //lê o arquivo e armazena na struct att
-        if(att.id_arquivo_att == idArquivo){
+
+    Atributo entry;
+    while (leAtributo(file, &entry)) {
+        if (entry.idArquivo == idArquivo) {
             *n += 1;
-            *atts = (Atributo*)realloc(*atts, *n * sizeof(Atributo)); //realoca o vetor de atributos
-            (*atts)[*n - 1] = att;
+            *atts = (Atributo *)realloc(*atts, *n * sizeof(Atributo));
+            (*atts)[*n - 1] = entry;
         }
     }
+
     fclose(file);
+    return 1;
 }

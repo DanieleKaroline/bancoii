@@ -1,15 +1,12 @@
-#include "att.h"
-#ifndef TABELA_H
-#define TABELA_H
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 
 typedef struct {
     int id;
-    char nome_logico[21];
-    char nome_fisico[21];
-} Tabela;
+    char nomeLogico[20];
+    char nomeFisico[20];
+} entradaTabela;
 
-
-int entradaTabela(const char* nomeLogico, Tabela* tabela);
-void printTabela(const char* nomeLogico, Atributo* atts, int n);
-
-#endif
+int leTabela(FILE *file, entradaTabela *entry);
+int buscaTabela(const char *nomeLogico, entradaTabela *entry);
