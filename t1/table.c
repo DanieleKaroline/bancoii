@@ -25,7 +25,6 @@ void printTabela(const char* nomeLogico, Atributo* atts, int n){
         for(int i = 0; i < n; i++){
             printf("Nome: %s\n", atts[i].nome_att);
             printf("Tipo: %c\n", atts[i].tipo);
-            printf("Opcional: %c\n", atts[i].opcional);
             printf("Tamanho: %d\n", atts[i].tamanho);
         }
     }
