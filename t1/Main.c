@@ -1,29 +1,29 @@
-#include "table.h"
-#include "att.h"
+#include "Libs/table.h"
+#include "Libs/att.h"
+#include <stdio.h>
+#include <stdlib.h>
 
 int main(int argc, char *argv[]) {
-    if (argc != 2) {
-        fprintf(stderr, "Usage: %s <nome_logico>\n", argv[0]);
-        return 1;
-    }
 
-    char *nomeLogico = argv[1];
+    char *nomeLogico = argv[1]; //recebe argumento
     entradaTabela entradaTabela;
     if (!buscaTabela(nomeLogico, &entradaTabela)) {
-        fprintf(stderr, "Table %s not found in table.dic\n", nomeLogico);
+        fprintf(stderr, "Tabela %s nao encontrada em table.dic\n", nomeLogico); //imprime na saida de erro
         return 1;
     }
 
     Atributo *atts = NULL;
     int n = 0;
+
     if (!buscaAtributo(entradaTabela.id, &atts, &n)) {
-        fprintf(stderr, "Error reading att.dic\n");
+        fprintf(stderr, "Error reading att.dic\n"); //imprime na saida de erro
         return 1;
     }
 
-    FILE *dataFile = fopen(entradaTabela.nomeFisico, "rb");
+    FILE *dataFile = fopen(entradaTabela.nomeFisico, "rb"); //abre arquivo para leitura binaria
+
     if (dataFile == NULL) {
-        perror("Error opening data file");
+        perror("Erro para abrir arqivo"); //imprime mensagem de erro
         free(atts);
         return 1;
     }
@@ -39,14 +39,16 @@ int main(int argc, char *argv[]) {
         int bytesRead = 0;
         for (int i = 0; i < n; i++) {
             if (atts[i].tipo == 'S') {
-                char str[atts[i].tamanho + 1];
-                bytesRead = fread(str, 1, atts[i].tamanho, dataFile);
-                if (bytesRead != atts[i].tamanho) break;
-                str[atts[i].tamanho] = '\0'; 
+                char str[atts[i].tamanho + 1]; //se tipo for string, aloca tamanho + 1 
+                bytesRead = fread(str, 1, atts[i].tamanho, dataFile); //le o tamanho do atributo
+                if (bytesRead != atts[i].tamanho){
+                    break;
+                }  //se não leu o tamanho correto, sai do loop
+                str[atts[i].tamanho] = '\0'; //adiciona \0 no final da string
                 printf("%s ", str);
             } else if (atts[i].tipo == 'I') {
                 int value;
-                bytesRead = fread(&value, sizeof(int), 1, dataFile);
+                bytesRead = fread(&value, sizeof(int), 1, dataFile); 
                 if (bytesRead != 1) break;
                 printf("%d ", value);
             } else if (atts[i].tipo == 'D') {
@@ -56,11 +58,11 @@ int main(int argc, char *argv[]) {
                 printf("%lf ", value);
             }
         }
-        if (bytesRead == 0) break; // Se não leu nada, sai do loop
+        if (bytesRead == 0) break; //se não leu nada, sai do loop
         printf("\n");
     }
 
     fclose(dataFile);
-    free(atts);
+    free(atts); //libera memoria
     return 0;
 }

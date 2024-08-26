@@ -6,7 +6,6 @@ typedef struct {
     int idArquivo;
     char nomeAtributo[20];
     char tipo;
-    char opcionalidade;
     int tamanho;
 } Atributo;
 
