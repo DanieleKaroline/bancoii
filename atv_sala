@@ -1,0 +1,68 @@
+postgres=# create database locacao;
+CREATE DATABASE
+postgres=# \c locacao;
+SSL connection (protocol: TLSv1.3, cipher: TLS_AES_256_GCM_SHA384, bits: 256, compression: off)
+You are now connected to database "locacao" as user "postgres".
+locacao=# create table Tipos_Veiculos(
+locacao(# codTipo int primary key,
+locacao(# descricao varchar not null);
+CREATE TABLE
+
+create table Habilitacoes(
+codH int primary key,
+tipo varchar not null,
+idade_min int not null,
+descricao varchar not null);
+CREATE TABLE
+
+locacao=# create table Veiculos(
+matricula int primary key,
+nome varchar not null,
+modelo varchar not null,
+comprimento float not null,
+potMotor int not null,
+vlDiaria float not null,
+codTipo int not null,
+constraint fk_tipo foreign key(cod_tipo) references tipos_veiculos(cod_tipo));
+CREATE TABLE
+
+create table funcionarios(
+locacao(# codF int primary key,
+locacao(# nome varchar not null,
+locacao(# telefone varchar not null,
+locacao(# endereco varchar not null,
+locacao(# idade int not null,
+locacao(# salario float not null);
+CREATE TABLE
+
+create table veiculos_habilitacoes(
+locacao(# codTipo int not null,
+locacao(# codH int not null,
+locacao(# constraint fk_tipo foreign key(codTipo) references tipos_veiculos(codTipo),
+locacao(# constraint fk_habilitacoes foreign key(codH) references habilitacoes(codH));
+CREATE TABLE
+
+create table clientes(
+locacao(# cpf int primary key,
+locacao(# nome varchar not null,
+locacao(# endereco varchar not null,
+locacao(# estado_civil varchar not null,
+locacao(# num_filhos int not null,
+locacao(# data_nasc date not null,
+locacao(# telefone int not null,
+locacao(# codH int not null,
+locacao(# constraint fk_habilitacoes foreign key(codH) references habilitacoes(codH));
+CREATE TABLE
+
+create table locacoes(
+codLoc int primary key,
+valor float not null,
+inicio date not null,
+fim date not null,
+obs varchar,
+matricula int not null,
+codF int not null,
+cpf int not null,
+constraint fk_veiculos foreign key(matricula) references veiculos(matricula),
+constraint fk_funcionarios foreign key(codF) references funcionarios(codF),
+constraint fk_clientes foreign key(cpf) references clientes(cpf));
