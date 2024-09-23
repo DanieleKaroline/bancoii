@@ -1,68 +1,146 @@
-postgres=# create database locacao;
-CREATE DATABASE
-postgres=# \c locacao;
-SSL connection (protocol: TLSv1.3, cipher: TLS_AES_256_GCM_SHA384, bits: 256, compression: off)
-You are now connected to database "locacao" as user "postgres".
-locacao=# create table Tipos_Veiculos(
-locacao(# codTipo int primary key,
-locacao(# descricao varchar not null);
-CREATE TABLE
+CREATE DATABASE locacao;
 
-create table Habilitacoes(
-codH int primary key,
-tipo varchar not null,
-idade_min int not null,
-descricao varchar not null);
-CREATE TABLE
+CREATE TABLE tipos_veiculos (
+    codtipo INT PRIMARY KEY,
+    descricao VARCHAR(255) NOT NULL
+);
 
-locacao=# create table Veiculos(
-matricula int primary key,
-nome varchar not null,
-modelo varchar not null,
-comprimento float not null,
-potMotor int not null,
-vlDiaria float not null,
-codTipo int not null,
-constraint fk_tipo foreign key(cod_tipo) references tipos_veiculos(cod_tipo));
-CREATE TABLE
+CREATE TABLE habilitacoes (
+    codh INT PRIMARY KEY,
+    tipo VARCHAR(255) NOT NULL,
+    idade_min INT NOT NULL,
+    descricao VARCHAR(255) NOT NULL
+);
 
-create table funcionarios(
-locacao(# codF int primary key,
-locacao(# nome varchar not null,
-locacao(# telefone varchar not null,
-locacao(# endereco varchar not null,
-locacao(# idade int not null,
-locacao(# salario float not null);
-CREATE TABLE
+CREATE TABLE veiculos (
+    matricula INT PRIMARY KEY,
+    nome VARCHAR(255) NOT NULL,
+    modelo VARCHAR(255) NOT NULL,
+    comprimento FLOAT NOT NULL,
+    potmotor INT NOT NULL,
+    vl_diaria FLOAT NOT NULL,
+    codtipo INT NOT NULL,
+    CONSTRAINT fk_tipo FOREIGN KEY (codtipo) REFERENCES tipos_veiculos (codtipo)
+);
 
-create table veiculos_habilitacoes(
-locacao(# codTipo int not null,
-locacao(# codH int not null,
-locacao(# constraint fk_tipo foreign key(codTipo) references tipos_veiculos(codTipo),
-locacao(# constraint fk_habilitacoes foreign key(codH) references habilitacoes(codH));
-CREATE TABLE
+CREATE TABLE funcionarios (
+    codf INT PRIMARY KEY,
+    nome VARCHAR(255) NOT NULL,
+    telefone VARCHAR(20) NOT NULL,
+    endereco VARCHAR(255) NOT NULL,
+    idade INT NOT NULL,
+    salario FLOAT NOT NULL
+);
 
-create table clientes(
-locacao(# cpf int primary key,
-locacao(# nome varchar not null,
-locacao(# endereco varchar not null,
-locacao(# estado_civil varchar not null,
-locacao(# num_filhos int not null,
-locacao(# data_nasc date not null,
-locacao(# telefone int not null,
-locacao(# codH int not null,
-locacao(# constraint fk_habilitacoes foreign key(codH) references habilitacoes(codH));
-CREATE TABLE
+CREATE TABLE veiculos_habilitacoes (
+    codtipo INT NOT NULL,
+    codh INT NOT NULL,
+    CONSTRAINT fk_tipo_veiculos_habilitacoes FOREIGN KEY (codtipo) REFERENCES tipos_veiculos (codtipo),
+    CONSTRAINT fk_habilitacoes FOREIGN KEY (codh) REFERENCES habilitacoes (codh)
+);
 
-create table locacoes(
-codLoc int primary key,
-valor float not null,
-inicio date not null,
-fim date not null,
-obs varchar,
-matricula int not null,
-codF int not null,
-cpf int not null,
-constraint fk_veiculos foreign key(matricula) references veiculos(matricula),
-constraint fk_funcionarios foreign key(codF) references funcionarios(codF),
-constraint fk_clientes foreign key(cpf) references clientes(cpf));
+CREATE TABLE clientes (
+    cpf VARCHAR(11) PRIMARY KEY,
+    nome VARCHAR(255) NOT NULL,
+    endereco VARCHAR(255) NOT NULL,
+    estado_civil VARCHAR(50) NOT NULL,
+    num_filhos INT NOT NULL,
+    data_nasc DATE NOT NULL,
+    telefone VARCHAR(20) NOT NULL,
+    codh INT NOT NULL,
+    CONSTRAINT fk_habilitacoes_clientes FOREIGN KEY (codh) REFERENCES habilitacoes (codh)
+);
+
+CREATE TABLE locacoes (
+    codloc INT PRIMARY KEY,
+    valor FLOAT NOT NULL,
+    inicio DATE NOT NULL,
+    fim DATE NOT NULL,
+    obs VARCHAR(255),
+    matricula INT NOT NULL,
+    codf INT NOT NULL,
+    cpf VARCHAR(11) NOT NULL,
+    CONSTRAINT fk_veiculos_locacoes FOREIGN KEY (matricula) REFERENCES veiculos (matricula),
+    CONSTRAINT fk_funcionarios_locacoes FOREIGN KEY (codf) REFERENCES funcionarios (codf),
+    CONSTRAINT fk_clientes_locacoes FOREIGN KEY (cpf) REFERENCES clientes (cpf)
+);
+
+-- insert --
+
+INSERT INTO tipos_veiculos (codtipo, descricao) VALUES
+(1, 'Catamarã'),
+(2, 'Jet-Ski'),
+(3, 'Iate de luxo'),
+(4, 'Lancha');
+
+INSERT INTO habilitacoes (codh, tipo, idade_min, descricao) VALUES
+(1, 'Habilitação Marítima A', 25, 'Habilitação para embarcações acima de 50 pés'),
+(2, 'Habilitação Marítima B', 21, 'Habilitação para embarcações de médio porte'),
+(3, 'Habilitação Marítima C', 18, 'Habilitação para embarcações pequenas'),
+(4, 'Habilitação para Jet-Ski', 18, 'Habilitação específica para Jet-Ski'),
+(5, 'Habilitação para Iate', 30, 'Habilitação para Iates e embarcações de luxo');
+
+INSERT INTO veiculos (matricula, nome, modelo, comprimento, potmotor, vl_diaria, codtipo) VALUES
+(201, 'Jet-Ski', 'Sea Doo GTI 130', 12, 160, 2500, 2),
+(202, 'Jet-Ski', 'Yamaha WaveRunner', 11, 180, 3000, 2),
+(302, 'Catamarã', 'Lagoon 40', 40, 500, 15000, 1),
+(303, 'Catamarã', 'Fountaine Pajot', 43, 600, 18000, 1),
+(304, 'Lancha', 'Phantom 300', 30, 450, 12000, 4),
+(403, 'Iate de luxo', 'Ferretti Yachts 670', 67, 1200, 35000, 3),
+(404, 'Iate de luxo', 'Azimut Grande 27 Metri', 88, 1400, 50000, 3);
+
+INSERT INTO funcionarios (codf, nome, telefone, endereco, idade, salario) VALUES
+(1, 'João Silva', '47991234567', 'Rua do Porto, 123', 35, 4500.00),
+(2, 'Maria Souza', '48987654321', 'Av. Beira Mar, 456', 29, 5500.00),
+(3, 'Carlos Oliveira', '47992345678', 'Rua das Nações, 789', 42, 6000.00),
+(4, 'Ana Paula', '48995432123', 'Rua das Flores, 101', 33, 4800.00),
+(5, 'Roberto Lima', '48993214567', 'Rua da Praia, 202', 40, 5200.00),
+(6, 'Julia Mendes', '47996543210', 'Rua do Sol, 404', 27, 4700.00);
+
+INSERT INTO veiculos_habilitacoes (codtipo, codh) VALUES
+(1, 1),
+(1, 2),
+(2, 4),
+(3, 5),
+(4, 2),
+(4, 3);
+
+INSERT INTO clientes (cpf, nome, endereco, estado_civil, num_filhos, data_nasc, telefone, codh) VALUES
+('68745120480', 'João Loco', 'Rua Konder, 181', 'Casado', 2, '1965-10-22', '4799235687', 5),
+('52145784502', 'Carlos', 'Rua Paraná, 155, Apto 405', 'Casado', 3, '1970-02-05', '4899563201', 2),
+('35420227840', 'Marcos', 'Rua Pejuçara, 97, Apto 202', 'Solteiro', 0, '1985-11-29', '4888015423', 3),
+('89406159987', 'Cristhian', 'Rua Mato Grosso, 48', 'Divorciado', 3, '1967-09-22', '4799563201', 3),
+('34568754210', 'Juliano', 'Rua Sete de Setembro, 485, Apto 408', 'Casado', 1, '1970-07-12', '4899873214', 1),
+('25415420130', 'Luiza', 'Rua Claudio Stakonski, 345, Apto 512', 'Casado', 3, '1950-02-23', '4888025411', 2),
+('87542022642', 'Cleyton', 'Rua Jorge Lacerda, 354', 'Solteiro', 0, '1987-12-30', '4899939529', 3),
+('35421578450', 'Cristiane', 'Rua Assis Brasil, 455, Apto 604', 'Viúva', 4, '1945-05-10', '4896584523', 4),
+('32154789605', 'Eloisa', 'Av. Rio Branco, 542, Apto 708', 'Casado', 2, '1960-10-24', '4895632024', 1),
+('32022487964', 'Heitor', 'Av. São Pedro, 25, Apto 105', 'Solteiro', 0, '1990-07-19', '4899962364', 5),
+('73154879460', 'Rubens', 'Rua Tamandaré, 152, Apto 547', 'Casado', 1, '1998-03-24', '4888998598', 2),
+('23548754210', 'Mariana', 'Av. Getúlio Vargas, 725, Apto 804', 'Casado', 3, '1972-01-18', '4899596233', 2);
+
+INSERT INTO locacoes (codloc, valor, inicio, fim, obs, matricula, codf, cpf) VALUES
+(7, 2500, '2022-01-13', '2022-01-14', 'Locação curta de Jet-Ski', 201, 4, '73154879460'),
+(8, 12000, '2022-01-15', '2022-01-18', 'Locação para passeio', 304, 2, '25415420130'),
+(9, 6000, '2022-01-20', '2022-01-22', 'Locação curta de Catamarã', 302, 1, '52145784502'),
+(10, 35000, '2022-02-01', '2022-02-10', 'Locação para férias em família', 404, 3, '35420227840'),
+(11, 20000, '2022-02-12', '2022-02-15', 'Locação para o Carnaval', 403, 5, '89406159987'),
+(12, 2500, '2022-02-16', '2022-02-17', 'Locação curta de Jet-Ski', 202, 4, '34568754210'),
+(13, 1200, '2022-02-20', '2022-02-20', 'Locação de Jet-Ski para evento', 202, 6, '32154789605'),
+(14, 20000, '2022-03-01', '2022-03-07', 'Locação para viagem de negócios', 302, 2, '23548754210'),
+(15, 38000, '2022-03-10', '2022-03-18', 'Locação para férias em família', 404, 3, '87542022642'),
+(16, 6000, '2022-03-20', '2022-03-22', 'Locação curta de Catamarã', 303, 5, '52145784502');
+
+
+1) 
+UPDATE clientes SET nome = 'Joao' WHERE cpf = '68745120480';
+UPDATE clientes SET estado_civil = 'Divorciada' WHERE cpf = '23548754210';
+UPDATE VEICULOS SET vl_diaria = vl_diaria * 1.124;
+DELETE FROM funcionarios WHERE nome = 'Marquito';
+
+2)
+SELECT nome, estado_civil, data_nasc FROM clientes;
+SELECT nome, idade, telefone FROM funcionarios;
+SELECT codh, tipo FROM habilitacoes WHERE idade_min > 25;
+SELECT nome FROM veiculos WHERE comprimento > 10 and potmotor > 120;
+SELECT nome, comprimento FROM veiculos WHERE potmotor >= 50 AND potmotor <= 300;
